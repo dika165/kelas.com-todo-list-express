@@ -1,23 +1,32 @@
 import { nanoid } from "nanoid";
 import Task from "../models/task.js";
+import { success, errorResp, response } from "../utils/response.js";
 
 const tasks = [];
-const getTasks = (req, res) => {
-    res.json(tasks);
+const getTasks = async (req, res, next) => {
+    try {
+        const [result] = await Task.getAll();
+        success(res,"success", result );
+    } catch(error) {
+        next(error);
+    }
 }
 
-const getDetailTask = (req, res) => {
-    const task = tasks.find(t => t.id === req.params.id);
-    if (!task) return res.status(404).json({message:"data not found!!"})
-
-    res.json(task);
-}
-
-const createTask = (req, res) => {
-    const task = new Task(nanoid(6), req.body.name, req.body.completed);
+const getDetailTask = async (req, res) => {
+    try {
+        const [tasks] = await Task.getById(id);
+        success(res, "success", tasks[0]);
+    } catch (error) {
+        next(error)
+    }
     
-    tasks.push(task);
-    res.json(task)
+}
+
+const createTask = async (req, res) => {
+    const [result] = await Task.create({req.body.name, req.body.completed});
+    let msg = "task created"
+    let data = result.insertId;
+    success(res, msg, data, 201)
 }
 
 const updateTask = (req, res) => {
