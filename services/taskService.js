@@ -1,8 +1,8 @@
 import { nanoid } from "nanoid";
 import Task from "../models/task.js";
 import { success, errorResp, response } from "../utils/response.js";
+import { taskSchema, taskUpdateSchema } from "../validators/taskValidator.js";
 
-const tasks = [];
 const getTasks = async (req, res, next) => {
     try {
         const [result] = await Task.getAll();
@@ -12,9 +12,9 @@ const getTasks = async (req, res, next) => {
     }
 }
 
-const getDetailTask = async (req, res) => {
+const getDetailTask = async (req, res, next) => {
     try {
-        const [tasks] = await Task.getById(id);
+        const [tasks] = await Task.getById(req.params.id);
         success(res, "success", tasks[0]);
     } catch (error) {
         next(error)
@@ -22,30 +22,37 @@ const getDetailTask = async (req, res) => {
     
 }
 
-const createTask = async (req, res) => {
-    const [result] = await Task.create({req.body.name, req.body.completed});
-    let msg = "task created"
-    let data = result.insertId;
-    success(res, msg, data, 201)
+const createTask = async (req, res,next) => {
+    try {
+        const value = taskSchema.validateAsync(req.body);
+        const [result] = await Task.create(value);
+        let msg = "task created"
+        let data = result.insertId;
+        success(res, msg, data, 201)
+    } catch (error) {
+        next(error);
+    }
+    
 }
 
-const updateTask = (req, res) => {
-    const task = tasks.find(t => t.id == req.params.id)
-    console.log(req.params.id);
-    if (!task) return res.status(404).json({message:"data not found!!"})
-    
-    task.name = req.body.name;
-    task.completed = req.body.completed;
-    res.json(task);
+const updateTask = async (req, res, next) => {
+    try {
+        const value = taskUpdateSchema.validateAsync(req.body);
+        const [result] = await Task.update(req.params.id, value);
+        console.log(result);
+        success(res, "update success", {})
+    } catch (error) {
+        next(error)
+    }
 }
 
-const deleteTask = (req, res) => {
-    (req, res) => {
-        const index = tasks.findIndex(t=> t.id === req.params.id);
-        if(!task) return res.status(404).json({message:"data not found!"})
-    
-        const task = tasks.splice(index, 1);
-        res.json(task);
+const deleteTask = async (req, res, next) => {
+    try {
+
+        const [result] = await Task.delete(req.params.id);
+        success(res, "success delete task", result)
+    } catch (error) {
+        next(error)
     }
 }
 

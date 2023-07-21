@@ -4,7 +4,8 @@ const dbPool = mysql.createPool({
     host: 'localhost',
     user: 'root',
     password: 'mauFJcuf5dhRMQrjj',
-    database: 'user_app'
+    database: 'user_app',
+    port:3307
 });
 
 export default dbPool;

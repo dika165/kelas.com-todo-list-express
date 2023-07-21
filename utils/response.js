@@ -28,4 +28,4 @@ const response = (code, message, data) => {
     // }
 }
 
-export { response, success, error } ;
+export { response, success, errorResp } ;
