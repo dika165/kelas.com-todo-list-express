@@ -1,34 +1,34 @@
 import dbPool from "../utils/db.js";
 
-class Task {
-    getAll(){
+    export const getAll = () => {
         const sql = "SELECT * FROM users";
         return dbPool.query(sql);
     }
 
-    getById(id){
+    export const getById = (id) => {
         const sql = 'SELECT * FROM users WHERE id = ?';
         return dbPool.query(sql, [id]);
     }
 
-    create({ name, completed }) {
-        const sql = 'INSERT INTO users (name, completed) VALUES (?, ?)';
-        return dbPool.query(sql, [name, completed]);
+    export const createData = ({ name, email, password}) => {
+        let createdAt = new Date();
+        const sql = 'INSERT INTO users (name, email, password, created_at) VALUES (?, ?, ?, ?)';
+        return dbPool.query(sql, [name, email, password, createdAt]);
       }
     
-    update(id, { name, completed }) {
-        return dbPool.query('UPDATE users SET name = ?, completed = ? WHERE id = ?', [name, completed,id]);
+    export const updateData = (id, { name, email }) => {
+        let updatedAt = new Date();
+        return dbPool.query('UPDATE users SET name = ?, email = ?, updated_at = ? WHERE id = ?', [name, completed,email, updatedAt, id]);
       }
     
-    delete(id) {
+    export const deleteData = (id) => {
         return dbPool.query('DELETE FROM users WHERE id = ?', [id]);
     }
     
-    authUser({username, password}) {
-        const sql = "SELECT id, username FROM users WHERE username = ? AND password = ?";
-        const value = [username, password];
+   export const authUser = ({email, password}) => {
+        const sql = "SELECT id, name, email FROM users WHERE email = ? AND password = ?";
+        const value = [email, password];
         const [users] = dbPool.query(sql, value);
 
         return users;
     }
-}
