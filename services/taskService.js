@@ -3,9 +3,11 @@ import Task from "../models/task.js";
 import { success, errorResp, response } from "../utils/response.js";
 import { taskSchema, taskUpdateSchema } from "../validators/taskValidator.js";
 
+const task = new Task();
+
 const getTasks = async (req, res, next) => {
     try {
-        const [result] = await Task.getAll();
+        const [result] = await task.getAll();
         success(res,"success", result );
     } catch(error) {
         next(error);
@@ -14,31 +16,31 @@ const getTasks = async (req, res, next) => {
 
 const getDetailTask = async (req, res, next) => {
     try {
-        const [tasks] = await Task.getById(req.params.id);
+        const [tasks] = await task.getById(req.params.id);
         success(res, "success", tasks[0]);
     } catch (error) {
         next(error)
     }
-    
+
 }
 
 const createTask = async (req, res,next) => {
     try {
         const value = taskSchema.validateAsync(req.body);
-        const [result] = await Task.create(value);
+        const [result] = await task.create(value);
         let msg = "task created"
         let data = result.insertId;
         success(res, msg, data, 201)
     } catch (error) {
         next(error);
     }
-    
+
 }
 
 const updateTask = async (req, res, next) => {
     try {
         const value = taskUpdateSchema.validateAsync(req.body);
-        const [result] = await Task.update(req.params.id, value);
+        const [result] = await task.update(req.params.id, value);
         console.log(result);
         success(res, "update success", {})
     } catch (error) {
@@ -48,8 +50,7 @@ const updateTask = async (req, res, next) => {
 
 const deleteTask = async (req, res, next) => {
     try {
-
-        const [result] = await Task.delete(req.params.id);
+        const [result] = await task.delete(req.params.id);
         success(res, "success delete task", result)
     } catch (error) {
         next(error)

@@ -1,9 +1,9 @@
 import * as UserModel from "../models/user.js";
 import { success, errorResp, response } from "../utils/response.js";
-import { taskSchema, taskUpdateSchema } from "../validators/taskValidator.js";
+import * as UserValidator from "../validators/userValidator.js";
 
 
-const getUsers = async (req, res, next) => {
+export const getUsers = async (req, res, next) => {
     try {
         const [result] = await UserModel.getAll();
         success(res,"success", result );
@@ -12,19 +12,19 @@ const getUsers = async (req, res, next) => {
     }
 }
 
-const getDetailTask = async (req, res, next) => {
+export const getUserById = async (req, res, next) => {
     try {
         const [tasks] = await UserModel.getById(req.params.id);
         success(res, "success", tasks[0]);
     } catch (error) {
         next(error)
     }
-    
+
 }
 
-const createTask = async (req, res,next) => {
+export const createUser = async (req, res,next) => {
     try {
-        const value = taskSchema.validateAsync(req.body);
+        const value = UserValidator.userSchema.validateAsync(req.body);
         const [result] = await UserModel.createData(value);
         let msg = "task created"
         let data = result.insertId;
@@ -32,28 +32,29 @@ const createTask = async (req, res,next) => {
     } catch (error) {
         next(error);
     }
-    
+
 }
 
-const updateTask = async (req, res, next) => {
+export const updateUser = async (req, res, next) => {
     try {
-        const value = taskUpdateSchema.validateAsync(req.body);
-        const [result] = await Task.update(req.params.id, value);
-        console.log(result);
-        success(res, "update success", {})
+        const value = UserValidator.userUpdateSchema.validateAsync(req.body);
+        const [result] = await UserModel.updateData(req.params.id, value);
+        if (result.affectedRows > 0){
+            success(res, "update success",{})
+        } else {
+            errorResp(res, "data tidak di temukan",400)
+        }
+
     } catch (error) {
         next(error)
     }
 }
 
-const deleteTask = async (req, res, next) => {
+export const deleteUser = async (req, res, next) => {
     try {
-
-        const [result] = await Task.delete(req.params.id);
+        const [result] = await UserModel.deleteData(req.params.id);
         success(res, "success delete task", result)
     } catch (error) {
         next(error)
     }
 }
-
-export { getUsers, getDetailTask, createTask, updateTask, deleteTask}

@@ -1,6 +1,7 @@
 import express from "express";
 import { nanoid } from "nanoid";
-import taskRoute from "./routes/taskRoute.js"
+import taskRoute from "./routes/taskRoute.js";
+import userRoute from "./routes/userRoute.js";
 import { errorResp } from "./utils/response.js";
 /*
     1. buat API menggunakan express js;
@@ -16,6 +17,7 @@ const host = "localhost";
 
 app.use(express.json());
 app.use('/tasks',taskRoute);
+app.use('users', userRoute);
 
 app.use((err, req, res, next) => {
     const msg = "internal server error";
