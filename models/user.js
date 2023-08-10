@@ -25,9 +25,9 @@ import dbPool from "../utils/db.js";
         return dbPool.query('DELETE FROM users WHERE id = ?', [id]);
     }
     
-   export const authUser = ({email, password}) => {
-        const sql = "SELECT id, name, email FROM users WHERE email = ? AND password = ?";
-        const value = [email, password];
+   export const authUser = ({email}) => {
+        const sql = "SELECT id, name, email, password FROM users WHERE email = ?";
+        const value = [email];
         const [users] = dbPool.query(sql, value);
 
         return users;
